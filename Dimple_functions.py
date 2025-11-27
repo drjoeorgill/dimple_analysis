@@ -46,6 +46,27 @@ def find_nearest_dimple(df_data,df_dimples):
     df_data_new['Distance_to_Nearest'] = distances
     return()
 
+def position_heatmap(df_data,df_dimples,bins=100):
+    """plot a 2d historgram of particle positions around closest dimple
+    Will only take particle data after running through find_nearest_dimple
+
+    Args:
+        df_data (pd dataframe): containging particle positions and nearest dimple colum
+        df_dimples (pd dataframe): dimple data 
+    """
+    x_dif=[]
+    y_dif=[]
+    for i in range(len(df_data)):
+        dimple_id = df_data['Nearest_Dimple_ID'].iloc[i]
+        x_dif.append(df_dimples['x'].iloc[dimple_id] - df_data['x'].iloc[i])
+        y_dif.append(df_dimples['y'].iloc[dimple_id] - df_data['y'].iloc[i])
+
+    plt.hist2d(x_dif,y_dif,bins=bins)
+    plt.show()
+    return()
+
+
+
 
 if __name__ == "__main__":
     file_name = "625_Trim"
