@@ -46,13 +46,16 @@ def find_nearest_dimple(df_data,df_dimples):
     df_data_new['Distance_to_Nearest'] = distances
     return()
 
-def position_heatmap(df_data,df_dimples,bins=100):
+def position_heatmap(df_data,df_dimples,bins=100, dimple_rad=40, dimple_dist=100):
     """plot a 2d historgram of particle positions around closest dimple
     Will only take particle data after running through find_nearest_dimple
 
     Args:
         df_data (pd dataframe): containging particle positions and nearest dimple colum
         df_dimples (pd dataframe): dimple data 
+        bins (int): number of bins in 2d hist
+        dimple_rad: dimple radius in pixels
+        dimple_dist: dimple - dimple radial distance in pixels
     """
     x_dif=[]
     y_dif=[]
@@ -62,6 +65,15 @@ def position_heatmap(df_data,df_dimples,bins=100):
         y_dif.append(df_dimples['y'].iloc[dimple_id] - df_data['y'].iloc[i])
 
     plt.hist2d(x_dif,y_dif,bins=bins)
+    circle1 = plt.Circle((0, 0), dimple_rad, color='r',fill=False)
+    circle2 = plt.Circle((dimple_dist,0),dimple_rad, color='b', fill=False)
+    plt.gca().add_patch(circle1)
+    plt.gca().add_patch(circle2)
+    angles = np.deg2rad(np.arange(0, 360, 60))  # 0,60,...,300 deg
+    x_pts = dimple_dist * np.cos(angles)
+    y_pts = dimple_dist * np.sin(angles)
+    plt.scatter(x_pts, y_pts, c='b', s=30)
+    plt.axvline(dimple_dist/2)
     plt.show()
     return()
 
