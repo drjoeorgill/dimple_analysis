@@ -46,7 +46,7 @@ def find_nearest_dimple(df_data,df_dimples):
     df_data_new['Distance_to_Nearest'] = distances
     return()
 
-def position_heatmap(df_data,df_dimples,bins=100, dimple_rad=40, dimple_dist=100):
+def position_heatmap(df_data,df_dimples,bins=100, dimple_rad=40, dimple_dist=100, pixpermm= 34.5):
     """plot a 2d historgram of particle positions around closest dimple
     Will only take particle data after running through find_nearest_dimple
 
