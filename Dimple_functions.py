@@ -5,6 +5,9 @@ from scipy.spatial import KDTree
 from labvision.video import ReadVideo
 from labvision.images import display, gaussian_blur, save
 from labvision.images.colours import bgr_to_gray
+import glob
+import pickle
+
 
 import cv2
 
@@ -119,7 +122,9 @@ def plot_in_dimple_ratio(plate, fill):
     plt.xticks(DCs[1::2])
     plt.legend()
 
-def plot_crystal_factor(folder, acc = False):
+
+
+def plot_crystal_factor(folder, acc = False, label = None, save = False):
     """Plot crystal factor for a range of tracked videos,
         files must be named xxx.hdf5 where xxx is the DC of the video, and be in the same folder.
         videos must have been tracked and assinged a boolean 'crystal' column using hexatic postprocess. 
@@ -129,11 +134,12 @@ def plot_crystal_factor(folder, acc = False):
         acc (bool, optional): if True, uses meta data to plot gamma instead of DC. Defaults to False.
     """
     #plt.figure()
-    files = glob.glob(folder+"[0-9][0-9][0-9].hdf5")
+    files = glob.glob(folder+"[0-9][0-9][0-9].hdf5") 
     DC = np.zeros(len(files))
     crystal_factor = np.zeros(len(files))
     for i in range(len(files)):
         file = files[i]
+        print(file)
         data = pd.read_hdf(file)
         DC[i] = int(file[-8:-5])
         crystal_factor[i] = data['crystal'].mean()
@@ -154,19 +160,29 @@ def plot_crystal_factor(folder, acc = False):
             average_acc[i] = np.mean(matching_accs)
             #print(average_acc[i], dc)
         print(average_acc)
-        plt.scatter(average_acc, crystal_factor)
+        plt.scatter(average_acc, crystal_factor, label=label)
         plt.xlabel('g')
         plt.ylabel('Crystal Factor')
         plt.title('Crystal Factor vs g for ' + folder[-12:-1])
+        if save:
+            save_data = np.column_stack((DC, average_acc, crystal_factor))
+            np.savetxt(folder+"crystal_factor.txt", save_data, header="DC g Crystal_Factor", fmt="%d %.6f %.6f")
+    
 
     else:
-        plt.scatter(DC, crystal_factor)
+        plt.scatter(DC, crystal_factor,label=label)
         plt.xlabel('DC')
         plt.ylabel('Crystal Factor')
         plt.title('Crystal Factor vs DC for ' + folder[-12:-1])
         plt.xticks(DC[0::10])
+        plt.legend()
+        if save:
+            save_data = np.column_stack((DC, crystal_factor))
+            np.savetxt(folder+"crystal_factor.txt", save_data, header="DC Crystal_Factor", fmt="%d %.6f")
     
-    plt.grid()
+    if label:
+        plt.legend()
+
     return()
 
 def plot_crystal_ramp(file):#, start, stop, acc = False):
