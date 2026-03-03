@@ -185,6 +185,22 @@ def plot_crystal_factor(folder, acc = False, label = None, save = False):
 
     return()
 
+def plot_saved_crysal_factor(folder, label = None, acc = False):
+    data = np.loadtxt(folder+"crystal_factor.txt")
+    DC = data[:,0]
+    crystal_factor = data[:,-1]
+    if acc:
+        acc = data[:,1]
+        plt.scatter(acc, crystal_factor, label=label)
+        plt.xlabel('g')
+    else:
+        plt.xlabel('DC')
+        plt.scatter(DC, crystal_factor, label=label)
+    plt.ylabel('Crystal Factor')
+    if label:
+        plt.legend()
+    return()
+
 def plot_crystal_ramp(file):#, start, stop, acc = False):
     """Plot crystal factor for each frame in a video hdf5
         Video must be tracked and assigned crystal column
